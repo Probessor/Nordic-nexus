@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Bess — Nordic Startup Scout</title>
+  <meta name="description" content="Get in touch with Bess, startup scout and ecosystem connector based in Oslo. Whether you're a founder, investor, or speaker booker — let's talk." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+
+    /* Contact page styles */
+    .contact-hero {
+      padding: calc(var(--nav-height) + var(--gap-md)) 0 var(--gap-lg);
+      background: var(--white);
+      border-bottom: 1px solid var(--border-light);
+      text-align: center;
+    }
+    .contact-hero .label { display: block; margin-bottom: 10px; }
+    .contact-hero h1 { margin-bottom: 16px; }
+    .contact-hero p   { margin: 0 auto; max-width: 55ch; }
+
+    /* Contact options cards (top section) */
+    .contact-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap-md);
+      margin: var(--gap-lg) 0;
+    }
+    .contact-option {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      padding: var(--gap-md);
+      text-align: center;
+      transition: all 0.25s var(--ease);
+    }
+    .contact-option:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+      border-color: var(--teal-mid);
+    }
+    .contact-option-icon {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 16px;
+    }
+    .contact-option h4 { margin-bottom: 6px; font-size: 1rem; }
+    .contact-option p  { font-size: 0.85rem; margin-bottom: 14px; }
+    .contact-option a.option-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--teal);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .contact-option a.option-link:hover { color: var(--primary); }
+
+    /* Main contact layout */
+    .contact-main {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--gap-lg);
+      align-items: start;
+    }
+
+    /* Contact info side */
+    .contact-info h2 { margin-bottom: 14px; }
+    .contact-info .lead { margin-bottom: var(--gap-md); }
+
+    .contact-details { margin-bottom: var(--gap-md); }
+    .contact-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .contact-detail-item:last-child { border-bottom: none; }
+    .cd-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .cd-text strong { display: block; font-size: 0.85rem; color: var(--text); }
+    .cd-text span   { font-size: 0.82rem; color: var(--text-muted); }
+    .cd-text a {
+      font-size: 0.82rem;
+      color: var(--teal);
+      font-weight: 500;
+    }
+
+    /* Social links panel */
+    .social-panel {
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      padding: var(--gap-md);
+      margin-top: var(--gap-md);
+    }
+    .social-panel h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .social-panel-links { display: flex; flex-direction: column; gap: 10px; }
+    .social-panel-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .social-panel-item:hover {
+      border-color: var(--teal-mid);
+      box-shadow: var(--shadow-sm);
+    }
+    .spi-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .spi-text strong { display: block; font-size: 0.85rem; color: var(--text); }
+    .spi-text span   { font-size: 0.76rem; color: var(--text-muted); }
+    .spi-arrow { margin-left: auto; color: var(--text-muted); font-size: 0.8rem; }
+
+    /* Availability indicator */
+    .availability-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #E8F8F0;
+      border: 1px solid #A8E6C8;
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #1A7A4A;
+      margin-bottom: var(--gap-md);
+    }
+    .availability-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* Form side */
+    .contact-form-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      padding: var(--gap-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-form-card h3 { margin-bottom: 6px; }
+    .contact-form-card > p { font-size: 0.9rem; margin-bottom: var(--gap-md); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-sm); }
+
+    /* Inquiry type selector */
+    .inquiry-select {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .inquiry-option {
+      position: relative;
+    }
+    .inquiry-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .inquiry-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .inquiry-label .il-icon { font-size: 1.3rem; }
+    .inquiry-label .il-text {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-mid);
+    }
+    .inquiry-option input[type="radio"]:checked + .inquiry-label {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+    .inquiry-option input[type="radio"]:checked + .inquiry-label .il-text {
+      color: var(--primary);
+    }
+    .inquiry-label:hover {
+      border-color: var(--teal-mid);
+      background: var(--teal-light);
+    }
+
+    .form-submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gap-sm);
+      margin-top: 6px;
+    }
+    .form-note { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* Success state */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: var(--gap-lg);
+    }
+    .form-success-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .form-success h3 { margin-bottom: 10px; }
+    .form-success p  { font-size: 0.9rem; max-width: 40ch; margin: 0 auto; }
+
+    /* Map-like location card */
+    .location-section { background: var(--white); border-top: 1px solid var(--border-light); }
+    .location-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+    }
+    .location-map {
+      height: 320px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(160deg, #E8F4F6 0%, #D0EBF0 40%, #C2E4EA 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+    }
+    .location-map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 40% 50%, rgba(59,191,178,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(30,58,76,0.06) 0%, transparent 40%);
+    }
+    .map-pin {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+    }
+    .map-pin-icon {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 20px rgba(30,58,76,0.25);
+    }
+    .map-pin-label {
+      background: var(--white);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--primary);
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+    .map-dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(30,58,76,0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .location-info h3 { margin-bottom: 14px; }
+    .location-info .lead { margin-bottom: var(--gap-md); }
+    .location-details { display: flex; flex-direction: column; gap: 12px; }
+    .ld-item {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .ld-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .ld-text strong { display: block; font-size: 0.85rem; color: var(--text); }
+    .ld-text span   { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* FAQ */
+    .faq-section { }
+    .faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-md); }
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+    }
+    .faq-item h4 { font-size: 0.95rem; margin-bottom: 8px; }
+    .faq-item p  { font-size: 0.85rem; }
+
+    @media (max-width: 900px) {
+      .contact-main { grid-template-columns: 1fr; }
+      .contact-options { grid-template-columns: 1fr; }
+      .location-inner { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .contact-form-card { padding: var(--gap-md); }
+      .inquiry-select { grid-template-columns: repeat(2, 1fr); }
+      .form-submit-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Bess<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="blog.html">Insights</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="blog.html" class="btn btn-outline" style="padding: 9px 20px;">Read Insights</a>
+        <a href="contact.html" class="btn btn-primary" style="padding: 9px 20px;">Work With Me</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="contact-hero">
+    <div class="container">
+      <span class="label">Get in touch</span>
+      <h1>Let's start a conversation</h1>
+      <p class="lead">
+        Whether you're a founder searching for capital, an investor looking for Nordic deal flow, a conference organiser, or just someone who wants to geek out about Norwegian startups — I'd love to hear from you.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== CONTACT OPTIONS ========== -->
+  <section class="section-sm" style="background: var(--bg);">
+    <div class="container">
+      <div class="contact-options">
+        <div class="contact-option">
+          <div class="contact-option-icon" style="background: var(--teal-light);">📬</div>
+          <h4>Send an Email</h4>
+          <p>For detailed inquiries, project briefs, or anything that needs a proper reply.</p>
+          <a href="mailto:hello@bess.no" class="option-link">hello@bess.no →</a>
+        </div>
+        <div class="contact-option">
+          <div class="contact-option-icon" style="background: var(--warm-light);">💼</div>
+          <h4>LinkedIn</h4>
+          <p>Connect professionally, follow ecosystem updates, or send a direct message.</p>
+          <a href="#" class="option-link">linkedin.com/in/bess →</a>
+        </div>
+        <div class="contact-option">
+          <div class="contact-option-icon" style="background: var(--surface);">📅</div>
+          <h4>Book a Call</h4>
+          <p>30-minute discovery calls available Tuesday–Thursday, 09:00–16:00 CET.</p>
+          <a href="#contact-form" class="option-link">Request a call →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MAIN CONTACT SECTION ========== -->
+  <section class="section" id="contact-form">
+    <div class="container">
+      <div class="contact-main">
+
+        <!-- Left: Info -->
+        <div class="contact-info">
+          <div class="availability-badge">
+            <span class="availability-dot"></span>
+            Available for new engagements — Q2 2026
+          </div>
+          <h2>I'm selective — and that's a good thing</h2>
+          <p class="lead">
+            I only take on a limited number of scouting and consulting engagements per quarter. This means when I work with you, I'm actually working — not juggling 20 other commitments.
+          </p>
+          <p style="color: var(--text-mid); margin-bottom: var(--gap-md); font-size: 0.9rem;">
+            I typically respond within 48 hours. If your inquiry is time-sensitive, say so in the message — I'll prioritise accordingly.
+          </p>
+
+          <div class="contact-details">
+            <div class="contact-detail-item">
+              <div class="cd-icon">📧</div>
+              <div class="cd-text">
+                <strong>Email</strong>
+                <a href="mailto:hello@bess.no">hello@bess.no</a>
+              </div>
+            </div>
+            <div class="contact-detail-item">
+              <div class="cd-icon">📍</div>
+              <div class="cd-text">
+                <strong>Location</strong>
+                <span>Oslo, Norway (CET/CEST timezone)</span>
+              </div>
+            </div>
+            <div class="contact-detail-item">
+              <div class="cd-icon">🗣️</div>
+              <div class="cd-text">
+                <strong>Languages</strong>
+                <span>Norwegian, English, Danish</span>
+              </div>
+            </div>
+            <div class="contact-detail-item">
+              <div class="cd-icon">⏱️</div>
+              <div class="cd-text">
+                <strong>Response time</strong>
+                <span>Within 48 hours on business days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="social-panel">
+            <h4>Find me online</h4>
+            <div class="social-panel-links">
+              <a href="#" class="social-panel-item">
+                <div class="spi-icon" style="background: #E8F0FE; color: #0A66C2; font-size: 0.8rem;">in</div>
+                <div class="spi-text">
+                  <strong>LinkedIn</strong>
+                  <span>/in/bess-andersen</span>
+                </div>
+                <span class="spi-arrow">→</span>
+              </a>
+              <a href="#" class="social-panel-item">
+                <div class="spi-icon" style="background: #F0F2F5; color: #111; font-size: 0.75rem; font-family: serif;">𝕏</div>
+                <div class="spi-text">
+                  <strong>Twitter / X</strong>
+                  <span>@BessScout</span>
+                </div>
+                <span class="spi-arrow">→</span>
+              </a>
+              <a href="#" class="social-panel-item">
+                <div class="spi-icon" style="background: var(--teal-light); color: var(--teal);">✉</div>
+                <div class="spi-text">
+                  <strong>Newsletter</strong>
+                  <span>The Nordic Startup Brief</span>
+                </div>
+                <span class="spi-arrow">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div>
+          <div class="contact-form-card" id="formWrapper">
+            <h3>Send a message</h3>
+            <p>Tell me what you're working on — the more context, the better I can help.</p>
+
+            <!-- Inquiry type -->
+            <div class="form-group">
+              <label>What's your inquiry about?</label>
+              <div class="inquiry-select">
+                <div class="inquiry-option">
+                  <input type="radio" name="inquiry" id="inq-founder" value="founder" checked />
+                  <label class="inquiry-label" for="inq-founder">
+                    <span class="il-icon">🚀</span>
+                    <span class="il-text">I'm a founder</span>
+                  </label>
+                </div>
+                <div class="inquiry-option">
+                  <input type="radio" name="inquiry" id="inq-investor" value="investor" />
+                  <label class="inquiry-label" for="inq-investor">
+                    <span class="il-icon">💼</span>
+                    <span class="il-text">I'm an investor</span>
+                  </label>
+                </div>
+                <div class="inquiry-option">
+                  <input type="radio" name="inquiry" id="inq-speaking" value="speaking" />
+                  <label class="inquiry-label" for="inq-speaking">
+                    <span class="il-icon">🎤</span>
+                    <span class="il-text">Speaking / Event</span>
+                  </label>
+                </div>
+                <div class="inquiry-option">
+                  <input type="radio" name="inquiry" id="inq-other" value="other" />
+                  <label class="inquiry-label" for="inq-other">
+                    <span class="il-icon">💬</span>
+                    <span class="il-text">Something else</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">First name *</label>
+                  <input type="text" id="firstName" placeholder="Kari" required />
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Last name *</label>
+                  <input type="text" id="lastName" placeholder="Nordmann" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email address *</label>
+                <input type="email" id="email" placeholder="kari@company.no" required />
+              </div>
+
+              <div class="form-group">
+                <label for="company">Company / Organisation</label>
+                <input type="text" id="company" placeholder="Your startup or firm" />
+              </div>
+
+              <div class="form-group">
+                <label for="subject">Subject *</label>
+                <input type="text" id="subject" placeholder="Brief summary of your message" required />
+              </div>
+
+              <div class="form-group">
+                <label for="message">Your message *</label>
+                <textarea id="message" placeholder="Tell me what you're working on, what you're looking for, and any relevant background that would help me understand your situation..." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="howFound">How did you find me?</label>
+                <select id="howFound">
+                  <option value="" disabled selected>Select an option</option>
+                  <option>LinkedIn</option>
+                  <option>Twitter / X</option>
+                  <option>A friend or colleague</option>
+                  <option>Google search</option>
+                  <option>At an event</option>
+                  <option>My newsletter</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="form-submit-row">
+                <p class="form-note">* Required fields. I'll respond within 48 business hours.</p>
+                <button type="submit" class="btn btn-primary">Send Message →</button>
+              </div>
+            </form>
+
+            <div class="form-success" id="formSuccess">
+              <span class="form-success-icon">🎉</span>
+              <h3>Message sent!</h3>
+              <p>Thanks for reaching out. I'll be back in touch within 48 business hours.</p>
+              <a href="blog.html" class="btn btn-outline mt-md" style="margin-top: 20px;">Read some Insights while you wait</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LOCATION ========== -->
+  <section class="section location-section">
+    <div class="container">
+      <div class="location-inner">
+        <div class="location-map">
+          <div class="map-dots"></div>
+          <div class="map-pin">
+            <div class="map-pin-icon">🏙️</div>
+            <div class="map-pin-label">Oslo, Norway</div>
+          </div>
+        </div>
+        <div class="location-info">
+          <span class="label">Where I'm based</span>
+          <h3>Oslo, Norway</h3>
+          <p class="lead">
+            I'm based in Oslo, the beating heart of the Norwegian startup ecosystem. Most meetings happen here — but I'm regularly travelling across Norway and to key European cities for events.
+          </p>
+          <div class="location-details">
+            <div class="ld-item">
+              <div class="ld-icon">🏙️</div>
+              <div class="ld-text">
+                <strong>Primary base</strong>
+                <span>Oslo, Norway — CET/CEST timezone</span>
+              </div>
+            </div>
+            <div class="ld-item">
+              <div class="ld-icon">✈️</div>
+              <div class="ld-text">
+                <strong>Regular cities</strong>
+                <span>Bergen, Trondheim, Stockholm, London, Berlin</span>
+              </div>
+            </div>
+            <div class="ld-item">
+              <div class="ld-icon">💻</div>
+              <div class="ld-text">
+                <strong>Remote-friendly</strong>
+                <span>Happy to work across timezones for the right projects</span>
+              </div>
+            </div>
+            <div class="ld-item">
+              <div class="ld-icon">☕</div>
+              <div class="ld-text">
+                <strong>Coffee meetings</strong>
+                <span>Always open to meeting in Oslo — just mention it</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FAQ ========== -->
+  <section class="section faq-section" style="background: var(--bg);">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="label">Common questions</span>
+        <h2>Before you reach out</h2>
+      </div>
+      <div class="faq-grid" style="margin-top: var(--gap-md);">
+        <div class="faq-item">
+          <h4>Do you work with startups outside Norway?</h4>
+          <p>My focus is on the Norwegian ecosystem, but I regularly work with international founders looking to enter the Nordic market, and with non-Norwegian investors seeking Nordic deal flow.</p>
+        </div>
+        <div class="faq-item">
+          <h4>What stage of startups do you work with?</h4>
+          <p>Mostly pre-seed through Series A. The earlier-stage work is typically scouting; later-stage is more investor introductions and market strategy. I'll be upfront if you're outside my sweet spot.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How does your fee structure work?</h4>
+          <p>It depends on the service. Scouting is usually a retainer. Investor matching can be project-based or success-fee. Consulting is hourly or project-based. We'll scope it clearly upfront — no surprises.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Are you available to speak at my event?</h4>
+          <p>Yes, with availability dependent on timing. I speak on Nordic startup ecosystems, venture capital trends, startup scouting, and innovation culture. Send details via the contact form above.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Can I just have a quick chat to see if there's a fit?</h4>
+          <p>Absolutely. That's what discovery calls are for. Tuesdays through Thursdays work best. Use the contact form to request one and I'll follow up to schedule.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Do you invest personally?</h4>
+          <p>No — I'm a scout, not an investor. I don't take equity positions. My role is to connect the right people, not to be a capital allocator myself. This keeps my incentives honest and my advice unbiased.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Bess<span>.</span></div>
+          <p>Connecting Norway's best founders with the world's best investors, one introduction at a time.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="blog.html">Insights</a></li>
+            <li><a href="podcast.html">Podcast</a></li>
+        <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Ecosystem</h5>
+          <ul>
+            <li><a href="#">StartupLab</a></li>
+            <li><a href="#">Katapult</a></li>
+            <li><a href="#">Mesh Oslo</a></li>
+            <li><a href="#">Innovation Norway</a></li>
+            <li><a href="#">Nordic Startup Awards</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:hello@bess.no">hello@bess.no</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">Oslo, Norway</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Bess Andersen. Built with curiosity about Norwegian innovation.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-link" aria-label="Email">✉</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+    document.getElementById('navToggle').addEventListener('click', () => nav.classList.toggle('open'));
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      // Simulate form submission
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+      document.querySelector('.contact-form-card h3').style.display = 'none';
+      document.querySelector('.contact-form-card > p').style.display = 'none';
+      document.querySelector('.inquiry-select').parentElement.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

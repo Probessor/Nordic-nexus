@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podkast — Bess, Nordic Startup Scout</title>
+  <meta name="description" content="Samtaler med grûndere, investorer og innovatører fra det norske og nordiske startup-miljøet." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+
+    /* Podcast hero */
+    .podcast-hero {
+      padding: calc(var(--nav-height) + var(--gap-lg)) 0 var(--gap-lg);
+      background: var(--white);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .podcast-hero-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--gap-lg);
+      align-items: end;
+    }
+    .podcast-hero h1 { margin-bottom: 12px; }
+    .podcast-hero .lead { max-width: 60ch; }
+
+    .podcast-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .podcast-stat strong {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .podcast-stat span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Platform badges */
+    .platform-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: var(--gap-md);
+    }
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      color: var(--text-mid);
+      transition: all 0.2s;
+      background: var(--white);
+    }
+    .platform-badge:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .platform-badge-icon { font-size: 1rem; }
+
+    /* Episode list */
+    .episode-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-md);
+    }
+
+    /* Episode card */
+    .episode-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.25s var(--ease);
+    }
+    .episode-card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .episode-header {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 200px;
+    }
+
+    .episode-thumbnail {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      cursor: pointer;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    }
+    .episode-thumbnail::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 30%, rgba(59,191,178,0.2) 0%, transparent 65%);
+    }
+    .episode-num {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      padding: 4px 11px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      text-transform: uppercase;
+      z-index: 1;
+    }
+    .play-btn {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--teal);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1;
+      transition: transform 0.2s, background 0.2s;
+      font-size: 1rem;
+      color: var(--white);
+    }
+    .play-btn:hover {
+      transform: scale(1.1);
+      background: #2fa99d;
+    }
+
+    .episode-meta-panel {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .episode-top { }
+    .episode-top .tag { margin-bottom: 12px; }
+    .episode-title {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .episode-desc {
+      font-size: 0.88rem;
+      margin-bottom: 0;
+    }
+    .episode-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .episode-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .episode-info-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .episode-info-icon { font-size: 0.85rem; }
+    .episode-guest {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .guest-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .guest-info { }
+    .guest-info strong {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+    .guest-info span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .episode-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      color: var(--text-mid);
+      background: transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .action-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--white);
+    }
+
+    /* Video player */
+    .episode-video {
+      display: none;
+      border-top: 1px solid var(--border-light);
+      background: #000;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+    .episode-video.open { display: block; }
+    .episode-video iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .episode-video-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--primary);
+      color: rgba(255,255,255,0.5);
+      font-size: 0.88rem;
+      min-height: 300px;
+    }
+    .episode-video-placeholder .placeholder-icon { font-size: 3rem; opacity: 0.4; }
+
+    /* Transcript */
+    .episode-transcript {
+      display: none;
+      border-top: 1px solid var(--border-light);
+      padding: var(--gap-md) 28px;
+      background: var(--surface);
+    }
+    .episode-transcript.open { display: block; }
+    .transcript-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .transcript-header h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .transcript-copy-btn {
+      padding: 5px 12px;
+      font-size: 0.76rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .transcript-copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .transcript-body {
+      font-size: 0.9rem;
+      line-height: 1.85;
+      color: var(--text-mid);
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .transcript-body::-webkit-scrollbar { width: 4px; }
+    .transcript-body::-webkit-scrollbar-track { background: transparent; }
+    .transcript-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .transcript-segment {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 12px;
+      align-items: baseline;
+    }
+    .transcript-time {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--teal);
+      min-width: 42px;
+      flex-shrink: 0;
+      font-family: monospace;
+    }
+    .transcript-text { }
+
+    /* Sidebar */
+    .podcast-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--gap-lg);
+      align-items: start;
+    }
+    .podcast-sidebar { position: sticky; top: 100px; }
+
+    /* About show widget */
+    .show-widget {
+      background: var(--primary);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+      margin-bottom: var(--gap-md);
+      color: var(--white);
+    }
+    .show-widget-cover {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--teal) 0%, #2fa99d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+    .show-widget h3 {
+      color: var(--white);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .show-widget p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.84rem;
+      margin-bottom: 16px;
+    }
+    .subscribe-btn {
+      display: block;
+      text-align: center;
+      padding: 11px;
+      background: var(--teal);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .subscribe-btn:hover { background: #2fa99d; }
+
+    /* Stats widget */
+    .stats-widget {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+      margin-bottom: var(--gap-md);
+    }
+    .stats-widget h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-item {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-item strong {
+      display: block;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .stat-item span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Guest list widget */
+    .guest-widget {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+      margin-bottom: var(--gap-md);
+    }
+    .guest-widget h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .guest-list { display: flex; flex-direction: column; gap: 12px; }
+    .guest-list-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .guest-list-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .guest-list-info strong { display: block; font-size: 0.84rem; color: var(--text); }
+    .guest-list-info span   { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Topics widget */
+    .topics-widget {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+    }
+    .topics-widget h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .tags-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .podcast-layout { grid-template-columns: 1fr; }
+      .podcast-sidebar { position: static; }
+    }
+    @media (max-width: 768px) {
+      .episode-header { grid-template-columns: 1fr; }
+      .episode-thumbnail { min-height: 200px; }
+      .podcast-hero-inner { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Bess<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Hjem</a></li>
+        <li><a href="services.html">Tjenester</a></li>
+        <li><a href="about.html">Om meg</a></li>
+        <li><a href="blog.html">Innsikt</a></li>
+        <li><a href="podcast.html" class="active">Podkast</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="podcast.html" class="btn btn-outline" style="padding: 9px 20px;">Hør podkasten</a>
+        <a href="contact.html" class="btn btn-primary" style="padding: 9px 20px;">Jobb med meg</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Meny">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="podcast-hero">
+    <div class="container">
+      <div class="podcast-hero-inner">
+        <div>
+          <span class="label">Podkast</span>
+          <h1>Nordisk Nexus<br>Podkasten</h1>
+          <p class="lead">
+            Ærlige samtaler med grûndere, investorer og innovatører fra det norske og nordiske startup-miljøet — på norsk, uten filter.
+          </p>
+          <div class="platform-links">
+            <a href="#" class="platform-badge">
+              <span class="platform-badge-icon">🎵</span> Spotify
+            </a>
+            <a href="#" class="platform-badge">
+              <span class="platform-badge-icon">🎙️</span> Apple Podcasts
+            </a>
+            <a href="#" class="platform-badge">
+              <span class="platform-badge-icon">▶️</span> YouTube
+            </a>
+            <a href="#" class="platform-badge">
+              <span class="platform-badge-icon">📡</span> RSS
+            </a>
+          </div>
+        </div>
+        <div class="podcast-stat">
+          <strong id="episode-count">0</strong>
+          <span>episoder</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONTENT ========== -->
+  <section class="section" style="padding-top: var(--gap-md);">
+    <div class="container">
+      <div class="podcast-layout">
+
+        <!-- Episode list -->
+        <div>
+          <div class="episode-list" id="episodeList">
+
+            <!-- EPISODES ARE INJECTED HERE BY podcast_workflow.py -->
+            <!-- Example episode card (remove when real episodes are added) -->
+            <div class="episode-card" style="border-style: dashed; background: var(--surface); box-shadow: none;">
+              <div class="episode-header">
+                <div class="episode-thumbnail" style="background: linear-gradient(135deg, var(--surface-2), var(--border)); cursor: default;">
+                  <span style="font-size: 3rem; opacity: 0.3;">🎙️</span>
+                </div>
+                <div class="episode-meta-panel">
+                  <div class="episode-top">
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 24px;">
+                      Den første episoden er på vei. Kjør <code style="background: var(--surface-2); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem;">podcast_workflow.py</code> for å publisere din første episode automatisk.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="podcast-sidebar">
+
+          <!-- About the show -->
+          <div class="show-widget">
+            <div class="show-widget-cover">🎙️</div>
+            <h3>Nordisk Nexus Podkasten</h3>
+            <p>Dybdesamtaler med menneskene som former norsk og nordisk innovasjon. Ny episode annenhver uke.</p>
+            <a href="#" class="subscribe-btn">Abonner nå →</a>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-widget">
+            <h4>Podkast-statistikk</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <strong id="stat-episodes">0</strong>
+                <span>episoder</span>
+              </div>
+              <div class="stat-item">
+                <strong>NO</strong>
+                <span>språk</span>
+              </div>
+              <div class="stat-item">
+                <strong>↗</strong>
+                <span>ny episode snart</span>
+              </div>
+              <div class="stat-item">
+                <strong>🎧</strong>
+                <span>alle plattformer</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent guests -->
+          <div class="guest-widget" id="guestWidget">
+            <h4>Gjester</h4>
+            <div class="guest-list" id="guestList">
+              <p style="font-size: 0.84rem; color: var(--text-muted);">Gjester vises her etter første episode.</p>
+            </div>
+          </div>
+
+          <!-- Topics -->
+          <div class="topics-widget">
+            <h4>Temaer</h4>
+            <div class="tags-cloud">
+              <span class="tag">Gründere</span>
+              <span class="tag">Investorer</span>
+              <span class="tag">CleanTech</span>
+              <span class="tag">AI</span>
+              <span class="tag tag-warm">Finansiering</span>
+              <span class="tag tag-warm">Vekst</span>
+              <span class="tag tag-surface">Kultur</span>
+              <span class="tag tag-surface">Strategi</span>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <div class="container" style="padding-bottom: var(--gap-xl);">
+    <div style="background: var(--primary); border-radius: var(--radius-lg); padding: var(--gap-lg); display: flex; align-items: center; justify-content: space-between; gap: var(--gap-md); flex-wrap: wrap;">
+      <div>
+        <h2 style="color: var(--white); margin-bottom: 8px; font-size: 1.6rem;">Vil du være gjest på podkasten?</h2>
+        <p style="color: rgba(255,255,255,0.65); max-width: 45ch;">Bygger du noe interessant i Norge? Ta kontakt — jeg vil gjerne høre historien din.</p>
+      </div>
+      <a href="contact.html" class="btn btn-teal">Ta kontakt →</a>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Bess<span>.</span></div>
+          <p>Kobler Norges beste grûndere med verdens beste investorer, én introduksjon om gangen.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Naviger</h5>
+          <ul>
+            <li><a href="index.html">Hjem</a></li>
+            <li><a href="services.html">Tjenester</a></li>
+            <li><a href="about.html">Om meg</a></li>
+            <li><a href="blog.html">Innsikt</a></li>
+            <li><a href="podcast.html">Podkast</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Temaer</h5>
+          <ul>
+            <li><a href="#">Startup-nyheter</a></li>
+            <li><a href="#">CleanTech</a></li>
+            <li><a href="#">AI & Deep Tech</a></li>
+            <li><a href="#">Maritim Tech</a></li>
+            <li><a href="#">Finansieringsrunder</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Kontakt</h5>
+          <ul>
+            <li><a href="mailto:hello@bess.no">hello@bess.no</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">Oslo, Norge</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Bess Andersen. Bygget med nysgjerrighet om norsk innovasjon.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-link" aria-label="Email">✉</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll + toggle
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+    document.getElementById('navToggle').addEventListener('click', () => nav.classList.toggle('open'));
+
+    // Count episodes and update stat
+    function updateStats() {
+      const cards = document.querySelectorAll('.episode-card[data-episode]');
+      const count = cards.length;
+      document.getElementById('episode-count').textContent = count;
+      document.getElementById('stat-episodes').textContent = count;
+    }
+
+    // Toggle video player
+    function toggleVideo(episodeId) {
+      const videoEl = document.getElementById('video-' + episodeId);
+      const btn = document.querySelector('[data-video-btn="' + episodeId + '"]');
+      if (!videoEl) return;
+      const isOpen = videoEl.classList.toggle('open');
+      if (btn) btn.classList.toggle('active', isOpen);
+    }
+
+    // Toggle transcript
+    function toggleTranscript(episodeId) {
+      const transcriptEl = document.getElementById('transcript-' + episodeId);
+      const btn = document.querySelector('[data-transcript-btn="' + episodeId + '"]');
+      if (!transcriptEl) return;
+      const isOpen = transcriptEl.classList.toggle('open');
+      if (btn) btn.classList.toggle('active', isOpen);
+    }
+
+    // Copy transcript to clipboard
+    function copyTranscript(episodeId) {
+      const transcriptEl = document.getElementById('transcript-' + episodeId);
+      if (!transcriptEl) return;
+      const text = transcriptEl.innerText.replace(/^\s*Transkript\s*Kopier\s*/i, '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = transcriptEl.querySelector('.transcript-copy-btn');
+        if (btn) { btn.textContent = 'Kopiert! ✓'; setTimeout(() => btn.textContent = 'Kopier', 2000); }
+      });
+    }
+
+    updateStats();
+  </script>
+</body>
+</html>
