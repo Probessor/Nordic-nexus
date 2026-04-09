@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services — Bess, Nordic Startup Scout</title>
+  <meta name="description" content="Startup scouting, investor matching, ecosystem consulting and speaking services for founders and investors in the Norwegian startup landscape." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Services-specific styles */
+
+    .services-hero {
+      padding: calc(var(--nav-height) + var(--gap-lg)) 0 var(--gap-lg);
+      background: var(--white);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .services-hero-inner {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+    }
+    .services-hero h1 { margin-bottom: 18px; }
+    .services-hero .lead { margin-bottom: var(--gap-md); }
+
+    .services-hero-card {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      padding: var(--gap-md);
+      border: 1px solid var(--border-light);
+    }
+    .services-hero-card h4 {
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      margin-bottom: 12px;
+    }
+    .services-quick-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sql-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    .sql-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .sql-text strong { display: block; font-size: 0.9rem; color: var(--text); }
+    .sql-text span   { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* Full service cards */
+    .service-full {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+      padding: var(--gap-xl) 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .service-full:last-child { border-bottom: none; }
+    .service-full.reverse    { direction: rtl; }
+    .service-full.reverse > * { direction: ltr; }
+
+    .service-full-visual {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .sv-teal   { background: linear-gradient(135deg, var(--teal-light) 0%, var(--teal-mid) 100%); }
+    .sv-warm   { background: linear-gradient(135deg, var(--warm-light) 0%, #F5CDB8 100%); }
+    .sv-navy   { background: linear-gradient(135deg, rgba(30,58,76,0.08) 0%, rgba(30,58,76,0.18) 100%); }
+    .sv-surf   { background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%); }
+
+    .service-visual-emoji {
+      font-size: 5rem;
+    }
+    .service-visual-badge {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .svb-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .svb-text strong { display: block; font-size: 0.88rem; color: var(--text); }
+    .svb-text span   { font-size: 0.76rem; color: var(--text-muted); }
+
+    .service-full-content .label { margin-bottom: 8px; display: block; }
+    .service-full-content h2 { margin-bottom: 16px; }
+    .service-full-content .lead { margin-bottom: var(--gap-md); }
+
+    .service-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: var(--gap-md);
+    }
+    .sf-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .sf-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      border: 1.5px solid var(--teal-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+      color: var(--teal);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .sf-item p { font-size: 0.9rem; max-width: none; margin: 0; }
+
+    /* Process section */
+    .process-section { background: var(--white); }
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--gap-md);
+      position: relative;
+      margin-top: var(--gap-md);
+    }
+    .process-step {
+      text-align: center;
+      position: relative;
+    }
+    .step-number {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .process-step h4 { font-size: 1rem; margin-bottom: 8px; }
+    .process-step p  { font-size: 0.85rem; }
+    .process-connector {
+      position: absolute;
+      top: 26px; left: calc(50% + 26px);
+      width: calc(100% - 52px);
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .process-step:last-child .process-connector { display: none; }
+
+    /* Testimonials */
+    .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-md); }
+    .testimonial-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      padding: var(--gap-md);
+    }
+    .testimonial-stars { color: var(--warm); font-size: 0.9rem; margin-bottom: 14px; }
+    .testimonial-quote {
+      font-size: 0.92rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+    .testimonial-author {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      background: var(--surface);
+    }
+    .testimonial-info strong { display: block; font-size: 0.88rem; color: var(--text); }
+    .testimonial-info span   { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* CTA banner */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: var(--gap-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gap-md);
+      margin: var(--gap-xl) auto;
+    }
+    .cta-banner h2 { color: var(--white); margin-bottom: 8px; font-size: 1.8rem; }
+    .cta-banner p  { color: rgba(255,255,255,0.7); max-width: 45ch; }
+    .cta-banner-actions { display: flex; gap: 12px; flex-shrink: 0; }
+
+    @media (max-width: 900px) {
+      .services-hero-inner { grid-template-columns: 1fr; }
+      .service-full { grid-template-columns: 1fr; }
+      .service-full.reverse { direction: ltr; }
+      .process-steps { grid-template-columns: repeat(2, 1fr); }
+      .testimonial-grid { grid-template-columns: 1fr; }
+      .cta-banner { flex-direction: column; text-align: center; }
+      .cta-banner-actions { justify-content: center; }
+    }
+    @media (max-width: 640px) {
+      .process-steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Bess<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html" class="active">Services</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="blog.html">Insights</a></li>
+        <li><a href="podcast.html">Podcast</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="blog.html" class="btn btn-outline" style="padding: 9px 20px;">Read Insights</a>
+        <a href="contact.html" class="btn btn-primary" style="padding: 9px 20px;">Work With Me</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="services-hero">
+    <div class="container">
+      <div class="services-hero-inner">
+        <div>
+          <span class="label">Services</span>
+          <h1>How I help you navigate Norway's startup landscape</h1>
+          <p class="lead">
+            Whether you're a founder searching for your first institutional check, or a global investor looking to access Nordic deal flow — I provide the connections, context, and credibility to make it happen.
+          </p>
+          <div class="flex gap-sm flex-wrap" style="flex-wrap: wrap;">
+            <a href="contact.html" class="btn btn-primary">Start a Conversation</a>
+            <a href="#scouting" class="btn btn-outline">Explore Services ↓</a>
+          </div>
+        </div>
+        <div class="services-hero-card">
+          <h4>What I offer</h4>
+          <div class="services-quick-list">
+            <div class="sql-item">
+              <div class="sql-icon" style="background: var(--teal-light);">🔭</div>
+              <div class="sql-text">
+                <strong>Startup Scouting</strong>
+                <span>Finding high-potential Norwegian companies</span>
+              </div>
+            </div>
+            <div class="sql-item">
+              <div class="sql-icon" style="background: var(--warm-light);">🤝</div>
+              <div class="sql-text">
+                <strong>Investor Matching</strong>
+                <span>Warm introductions to the right capital</span>
+              </div>
+            </div>
+            <div class="sql-item">
+              <div class="sql-icon" style="background: var(--surface);">🗺️</div>
+              <div class="sql-text">
+                <strong>Ecosystem Consulting</strong>
+                <span>Strategy for entering the Nordic market</span>
+              </div>
+            </div>
+            <div class="sql-item">
+              <div class="sql-icon" style="background: rgba(30,58,76,0.08);">🎤</div>
+              <div class="sql-text">
+                <strong>Speaking & Events</strong>
+                <span>Keynotes, panels, and workshops</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SERVICES DETAIL ========== -->
+  <div class="container">
+
+    <!-- Scouting -->
+    <div class="service-full" id="scouting">
+      <div class="service-full-visual sv-teal">
+        <div class="service-visual-emoji">🔭</div>
+        <div class="service-visual-badge">
+          <div class="svb-icon">📈</div>
+          <div class="svb-text">
+            <strong>120+ startups scouted</strong>
+            <span>Across all sectors</span>
+          </div>
+        </div>
+      </div>
+      <div class="service-full-content">
+        <span class="label">Service 01</span>
+        <h2>Startup Scouting</h2>
+        <p class="lead">I find the companies worth betting on before they become household names. My sourcing is proactive, rigorous, and grounded in years of ecosystem knowledge.</p>
+        <div class="service-features">
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Continuous pipeline of pre-screened, early-to-growth stage Norwegian startups</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Sector-specific deep dives: CleanTech, Deep Tech, Maritime, HealthTech, and more</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Qualitative assessments of team, market, and competitive landscape</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Monthly scout reports with curated shortlists tailored to your investment thesis</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Direct access to founders for preliminary conversations and due diligence</p>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-primary">Discuss Scouting →</a>
+      </div>
+    </div>
+
+    <!-- Investor Matching -->
+    <div class="service-full reverse" id="matching">
+      <div class="service-full-visual sv-warm">
+        <div class="service-visual-emoji">🤝</div>
+        <div class="service-visual-badge">
+          <div class="svb-icon" style="background: var(--warm-light);">💼</div>
+          <div class="svb-text">
+            <strong>60+ active investors</strong>
+            <span>In my network</span>
+          </div>
+        </div>
+      </div>
+      <div class="service-full-content">
+        <span class="label">Service 02</span>
+        <h2>Investor Matching</h2>
+        <p class="lead">A warm introduction is worth a thousand cold emails. I make the connections that open doors — matching founders with investors who are genuinely aligned on stage, sector, and vision.</p>
+        <div class="service-features">
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Curated introductions to Nordic and international investors active in your sector</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Preparation support: deck review, narrative sharpening, and Q&A coaching</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Investor readiness audit — so you show up with your best story</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Post-introduction follow-up and relationship management support</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Access to private syndicates, family offices, and corporate venture arms</p>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-warm">Start Matching →</a>
+      </div>
+    </div>
+
+    <!-- Ecosystem Consulting -->
+    <div class="service-full" id="consulting">
+      <div class="service-full-visual sv-navy">
+        <div class="service-visual-emoji">🗺️</div>
+        <div class="service-visual-badge">
+          <div class="svb-icon" style="background: rgba(30,58,76,0.08);">🌍</div>
+          <div class="svb-text">
+            <strong>Nordic market entry</strong>
+            <span>Strategy & guidance</span>
+          </div>
+        </div>
+      </div>
+      <div class="service-full-content">
+        <span class="label">Service 03</span>
+        <h2>Ecosystem Consulting</h2>
+        <p class="lead">Entering a new market is always complex — but Norway has its own unique dynamics. I help international founders and investors understand the landscape before they set foot in it.</p>
+        <div class="service-features">
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Nordic market entry strategy for international founders and companies</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Regulatory and cultural landscape briefings for foreign investors</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Ecosystem mapping: hubs, accelerators, grants, and government programs</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Competitor landscape and whitespace analysis in Norwegian sectors</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Ongoing advisory retainer for sustained ecosystem navigation</p>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-primary">Explore Consulting →</a>
+      </div>
+    </div>
+
+    <!-- Speaking -->
+    <div class="service-full reverse" id="speaking">
+      <div class="service-full-visual sv-surf">
+        <div class="service-visual-emoji">🎤</div>
+        <div class="service-visual-badge">
+          <div class="svb-icon" style="background: var(--surface);">📅</div>
+          <div class="svb-text">
+            <strong>20+ events per year</strong>
+            <span>Keynotes & panels</span>
+          </div>
+        </div>
+      </div>
+      <div class="service-full-content">
+        <span class="label">Service 04</span>
+        <h2>Speaking & Events</h2>
+        <p class="lead">I bring the Norwegian startup perspective to stages around the world — whether it's a keynote, a panel discussion, a workshop, or a fireside chat with your team.</p>
+        <div class="service-features">
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Keynote presentations on Nordic innovation, venture trends, and ecosystem dynamics</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Panel moderation at startup and investor conferences across Europe</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Internal workshops for corporate innovation teams exploring Nordic partnerships</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Ecosystem tours: curated Oslo visits for investor groups and delegations</p>
+          </div>
+          <div class="sf-item">
+            <div class="sf-check">✓</div>
+            <p>Podcast and media appearances on Norwegian entrepreneurship topics</p>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-primary">Book a Talk →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== PROCESS ========== -->
+  <section class="section process-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="label">How it works</span>
+        <h2>From first hello to lasting impact</h2>
+        <p class="lead" style="margin: 0 auto;">A simple, transparent process built on real relationships — no black boxes, no surprise fees.</p>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-number">1</div>
+          <div class="process-connector"></div>
+          <h4>Discovery Call</h4>
+          <p>We align on your goals, investment thesis, or fundraising needs in a 30-minute conversation.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-number">2</div>
+          <div class="process-connector"></div>
+          <h4>Scoping</h4>
+          <p>I map the right service, timeline, and expectations — with total transparency on how I work and what I charge.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-number">3</div>
+          <div class="process-connector"></div>
+          <h4>Active Work</h4>
+          <p>Scouting, research, outreach, and introductions. I work quickly and keep you updated throughout.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-number">4</div>
+          <h4>Long-term Value</h4>
+          <p>Great connections compound. I stay involved to make sure introductions become real relationships.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIALS ========== -->
+  <section class="section" style="background: var(--bg);">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="label">What people say</span>
+        <h2>Trusted by founders and investors</h2>
+      </div>
+      <div class="testimonial-grid" style="margin-top: var(--gap-md);">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "Bess introduced us to three tier-1 investors in our first week working together. Her network in the Nordic ecosystem is unmatched — and she only makes introductions when they genuinely make sense."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">🧑‍💻</div>
+            <div class="testimonial-info">
+              <strong>Lars K.</strong>
+              <span>CEO, Synapse Nordic</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "As a London-based VC exploring Nordic markets, Bess was our indispensable guide. Her ecosystem consulting saved us months of groundwork and opened doors we didn't even know existed."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">👩‍💼</div>
+            <div class="testimonial-info">
+              <strong>Sophie M.</strong>
+              <span>Partner, Meridian Ventures</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">
+            "Bess keynoted at our Oslo Innovation Week session and absolutely owned the room. She has this rare ability to make complex venture dynamics feel accessible and exciting for any audience."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">🎙️</div>
+            <div class="testimonial-info">
+              <strong>Marte B.</strong>
+              <span>Program Director, Oslo Innovation Week</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA BANNER ========== -->
+  <div class="container">
+    <div class="cta-banner">
+      <div>
+        <h2>Ready to get started?</h2>
+        <p>Tell me about your goals — whether you're raising, investing, or just trying to understand this fascinating corner of the world.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="contact.html" class="btn btn-teal">Get in Touch</a>
+        <a href="about.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.85);">About Me</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Bess<span>.</span></div>
+          <p>Connecting Norway's best founders with the world's best investors, one introduction at a time.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="blog.html">Insights</a></li>
+            <li><a href="podcast.html">Podcast</a></li>
+        <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="#scouting">Startup Scouting</a></li>
+            <li><a href="#matching">Investor Matching</a></li>
+            <li><a href="#consulting">Ecosystem Consulting</a></li>
+            <li><a href="#speaking">Speaking & Events</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:hello@bess.no">hello@bess.no</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">Oslo, Norway</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Bess Andersen. Built with curiosity about Norwegian innovation.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-link" aria-label="Email">✉</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+    document.getElementById('navToggle').addEventListener('click', () => nav.classList.toggle('open'));
+  </script>
+</body>
+</html>

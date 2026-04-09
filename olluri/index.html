@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bess — Nordic Startup Scout</title>
+  <meta name="description" content="Bess connects Norway's most promising founders with the world's best investors. Startup scout, ecosystem connector, and your guide to Norwegian innovation." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ---- Page-specific styles ---- */
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: var(--nav-height);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 65% 55% at 5% 35%, rgba(59,191,178,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 65% at 95% 10%, rgba(30,58,76,0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 55% 90%, rgba(212,120,74,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+      width: 100%;
+      padding: var(--gap-xl) 0;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .hero-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.75); }
+    }
+    .hero h1 {
+      margin-bottom: 24px;
+      font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--teal);
+    }
+    .hero-cta {
+      display: flex;
+      gap: var(--gap-sm);
+      margin-top: var(--gap-md);
+      flex-wrap: wrap;
+    }
+    .hero-stats {
+      display: flex;
+      gap: var(--gap-md);
+      margin-top: var(--gap-lg);
+      padding-top: var(--gap-md);
+      border-top: 1px solid var(--border-light);
+    }
+    .stat-item h3 {
+      font-size: 2rem;
+      margin-bottom: 2px;
+    }
+    .stat-item p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      max-width: none;
+    }
+
+    /* Hero visual */
+    .hero-visual {
+      position: relative;
+    }
+    .hero-card-stack {
+      position: relative;
+      height: 460px;
+    }
+    .hero-card-main {
+      position: absolute;
+      top: 40px; left: 0;
+      width: 340px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-light);
+    }
+    .hero-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .hero-card-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .hero-card-name h4 { font-size: 0.95rem; margin: 0; color: var(--text); }
+    .hero-card-name p  { font-size: 0.8rem; color: var(--text-muted); margin: 0; max-width: none; }
+    .hero-card-quote {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      font-style: italic;
+      border-left: 3px solid var(--teal);
+      padding-left: 12px;
+      margin: 16px 0;
+    }
+    .hero-card-stats {
+      display: flex;
+      gap: var(--gap-sm);
+    }
+    .hcs-item {
+      flex: 1;
+      text-align: center;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+    }
+    .hcs-item strong { display: block; font-size: 1.05rem; color: var(--primary); }
+    .hcs-item span   { font-size: 0.7rem; color: var(--text-muted); }
+
+    .hero-card-float {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+    }
+    .hero-card-float-1 {
+      right: 0; top: 0;
+      width: 200px;
+    }
+    .hero-card-float-2 {
+      right: 20px; bottom: 20px;
+      width: 220px;
+    }
+    .float-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .float-hubs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .float-hub-pill {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 100px;
+      background: var(--teal-light);
+      color: var(--teal);
+      border: 1px solid var(--teal-mid);
+    }
+    .float-event {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .float-event-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: var(--warm-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .float-event-text p {
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      max-width: none;
+      line-height: 1.3;
+    }
+    .float-event-text strong {
+      font-size: 0.78rem;
+      color: var(--text);
+    }
+
+    /* Logos / partners strip */
+    .logos-strip {
+      background: var(--white);
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--gap-md) 0;
+    }
+    .logos-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-md);
+      flex-wrap: wrap;
+    }
+    .logos-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .logos-list {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-md);
+      flex-wrap: wrap;
+    }
+    .logo-item {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      opacity: 0.55;
+      transition: opacity 0.2s;
+    }
+    .logo-item:hover { opacity: 0.9; }
+
+    /* Services preview */
+    .service-preview-card {
+      padding: var(--gap-md);
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      transition: all 0.25s var(--ease);
+    }
+    .service-preview-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+    }
+    .service-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    .service-icon-teal  { background: var(--teal-light); }
+    .service-icon-warm  { background: var(--warm-light); }
+    .service-icon-surf  { background: var(--surface); }
+    .service-icon-navy  { background: rgba(30,58,76,0.08); }
+
+    .service-preview-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+    .service-preview-card p  { font-size: 0.9rem; }
+
+    /* Startups section */
+    .startups-section { background: var(--white); }
+    .startup-card {
+      padding: var(--gap-md);
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      transition: all 0.25s var(--ease);
+    }
+    .startup-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+      border-color: var(--teal-mid);
+    }
+    .startup-logo {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 14px;
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+    .startup-card h4 { font-size: 1rem; margin-bottom: 4px; }
+    .startup-card .sector { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; display: block; max-width: none; }
+    .startup-card p { font-size: 0.85rem; margin-bottom: 14px; }
+    .startup-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--teal);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .startup-link:hover { color: var(--primary); }
+
+    /* Hubs section */
+    .hubs-section { background: var(--primary); }
+    .hubs-section .label { color: var(--teal); }
+    .hubs-section h2  { color: var(--white); }
+    .hubs-section .lead { color: rgba(255,255,255,0.65); }
+    .hub-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: var(--gap-md);
+      transition: all 0.25s var(--ease);
+    }
+    .hub-card:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-4px);
+    }
+    .hub-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+    }
+    .hub-card h4 { color: var(--white); font-size: 1rem; margin-bottom: 6px; }
+    .hub-card p  { color: rgba(255,255,255,0.6); font-size: 0.85rem; max-width: none; }
+    .hub-card .tag { margin-top: 16px; }
+
+    /* About teaser */
+    .about-teaser {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-lg);
+      align-items: center;
+    }
+    .about-teaser-img {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal-light) 0%, var(--surface) 60%, var(--warm-light) 100%);
+      height: 420px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .about-teaser-img .portrait-placeholder {
+      width: 200px; height: 300px;
+      background: linear-gradient(180deg, var(--teal-mid) 0%, var(--teal) 100%);
+      border-radius: 120px 120px 0 0;
+      opacity: 0.35;
+    }
+    .about-teaser-img .name-badge {
+      position: absolute;
+      bottom: var(--gap-md);
+      left: var(--gap-md);
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      box-shadow: var(--shadow);
+    }
+    .name-badge strong { display: block; font-size: 1rem; color: var(--primary); }
+    .name-badge span   { font-size: 0.8rem; color: var(--text-muted); }
+
+    .about-values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: var(--gap-md) 0;
+    }
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .value-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .value-item h5 { font-size: 0.85rem; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text); }
+    .value-item p  { font-size: 0.8rem; max-width: none; margin: 0; }
+
+    /* Blog posts */
+    .blog-card-featured {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--gap-md);
+      transition: all 0.25s var(--ease);
+    }
+    .blog-card-featured:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-3px);
+    }
+    .blog-featured-img {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--teal) 100%);
+      min-height: 300px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .blog-featured-body {
+      padding: var(--gap-md) var(--gap-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .blog-featured-body h3 { margin: 12px 0; font-size: 1.5rem; }
+    .blog-featured-body p  { margin-bottom: var(--gap-sm); }
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-sm);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .blog-meta-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .blog-card-sm {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      transition: all 0.25s var(--ease);
+    }
+    .blog-card-sm:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .blog-card-sm-img {
+      height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+    .blog-card-sm-body { padding: 20px; }
+    .blog-card-sm-body h4 { font-size: 1rem; margin: 10px 0 8px; line-height: 1.35; }
+    .blog-card-sm-body p  { font-size: 0.83rem; }
+
+    /* CTA section */
+    .cta-section {
+      background: var(--primary);
+      border-radius: var(--radius-lg);
+      padding: var(--gap-lg);
+      text-align: center;
+      margin: var(--gap-xl) auto;
+      max-width: 720px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -10%;
+      width: 60%; height: 200%;
+      background: radial-gradient(ellipse, rgba(59,191,178,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section h2  { color: var(--white); font-size: 2rem; margin-bottom: 12px; }
+    .cta-section p   { color: rgba(255,255,255,0.7); margin: 0 auto var(--gap-md); max-width: 48ch; }
+    .cta-section .flex { justify-content: center; }
+
+    /* Responsive tweaks */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .about-teaser { grid-template-columns: 1fr; }
+      .blog-card-featured { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .hero-stats { flex-direction: column; gap: var(--gap-sm); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Bess<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="blog.html">Insights</a></li>
+        <li><a href="podcast.html">Podcast</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="blog.html" class="btn btn-outline" style="padding: 9px 20px;">Read Insights</a>
+        <a href="contact.html" class="btn btn-primary" style="padding: 9px 20px;">Work With Me</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero aurora-bg">
+    <div class="container">
+      <div class="hero-inner">
+
+        <div class="hero-content">
+          <div class="hero-eyebrow">
+            <div class="hero-dot"></div>
+            <span class="label">Oslo, Norway &mdash; Open for collaboration</span>
+          </div>
+          <h1>Where great founders meet <em>the right</em> investors</h1>
+          <p class="lead">
+            I'm Bess — a startup scout and ecosystem connector navigating the Norwegian innovation landscape. I bridge the gap between ambitious founders and visionary investors.
+          </p>
+          <div class="hero-cta">
+            <a href="services.html" class="btn btn-primary">Explore Services</a>
+            <a href="about.html" class="btn btn-outline">My Story</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h3>120+</h3>
+              <p>Startups scouted</p>
+            </div>
+            <div class="stat-item">
+              <h3>60+</h3>
+              <p>Investors connected</p>
+            </div>
+            <div class="stat-item">
+              <h3>8+</h3>
+              <p>Years in ecosystems</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-card-stack">
+
+            <div class="hero-card-main">
+              <div class="hero-card-tag">
+                <div class="hero-card-avatar">🏔️</div>
+                <div class="hero-card-name">
+                  <h4>Latest Scout Report</h4>
+                  <p>Nordic Deep Tech — Q1 2026</p>
+                </div>
+              </div>
+              <p class="hero-card-quote">
+                "Norway's deep tech scene is generating some of the most compelling investment opportunities in Europe right now."
+              </p>
+              <div class="hero-card-stats">
+                <div class="hcs-item">
+                  <strong>€2.1B</strong>
+                  <span>Total raised</span>
+                </div>
+                <div class="hcs-item">
+                  <strong>34</strong>
+                  <span>New deals</span>
+                </div>
+                <div class="hcs-item">
+                  <strong>12</strong>
+                  <span>Top picks</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-card-float hero-card-float-1">
+              <span class="float-label">Active hubs</span>
+              <div class="float-hubs">
+                <span class="float-hub-pill">StartupLab</span>
+                <span class="float-hub-pill">Katapult</span>
+                <span class="float-hub-pill">Mesh Oslo</span>
+                <span class="float-hub-pill">Founders</span>
+              </div>
+            </div>
+
+            <div class="hero-card-float hero-card-float-2">
+              <div class="float-event">
+                <div class="float-event-icon">🗓️</div>
+                <div class="float-event-text">
+                  <strong>Oslo Innovation Week</strong>
+                  <p>Oct 2026 · Oslo</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LOGOS STRIP ========== -->
+  <div class="logos-strip">
+    <div class="container">
+      <div class="logos-inner">
+        <span class="logos-label">Ecosystem partners</span>
+        <div class="logos-list">
+          <span class="logo-item">StartupLab</span>
+          <span class="logo-item">Katapult</span>
+          <span class="logo-item">Mesh Oslo</span>
+          <span class="logo-item">Norse Ventures</span>
+          <span class="logo-item">Oslo Innovation Week</span>
+          <span class="logo-item">Investinor</span>
+          <span class="logo-item">Innovation Norway</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SERVICES PREVIEW ========== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header-row">
+        <div>
+          <span class="label">What I do</span>
+          <h2>How I create value<br>in the ecosystem</h2>
+        </div>
+        <a href="services.html" class="btn btn-outline">All Services →</a>
+      </div>
+      <div class="grid-4">
+        <div class="service-preview-card">
+          <div class="service-icon service-icon-teal">🔭</div>
+          <h3>Startup Scouting</h3>
+          <p>Identifying high-potential Norwegian startups before they hit the radar.</p>
+        </div>
+        <div class="service-preview-card">
+          <div class="service-icon service-icon-warm">🤝</div>
+          <h3>Investor Matching</h3>
+          <p>Connecting the right founders with the investors who will champion them.</p>
+        </div>
+        <div class="service-preview-card">
+          <div class="service-icon service-icon-surf">🗺️</div>
+          <h3>Ecosystem Consulting</h3>
+          <p>Strategic guidance for navigating the Norwegian startup landscape.</p>
+        </div>
+        <div class="service-preview-card">
+          <div class="service-icon service-icon-navy">🎤</div>
+          <h3>Speaking & Events</h3>
+          <p>Keynotes, panels, and workshops on Nordic innovation and venture trends.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FEATURED STARTUPS ========== -->
+  <section class="section startups-section">
+    <div class="container">
+      <div class="section-header-row">
+        <div>
+          <span class="label">On my radar</span>
+          <h2>Norwegian startups<br>worth watching</h2>
+        </div>
+        <a href="blog.html" class="btn btn-outline">All Coverage →</a>
+      </div>
+      <div class="grid-3">
+
+        <div class="startup-card">
+          <div class="startup-logo">🌊</div>
+          <span class="tag">CleanTech</span>
+          <h4>Orca Hydrogen</h4>
+          <span class="sector">Green Energy · Oslo</span>
+          <p>Pioneering scalable hydrogen production using Norway's abundant hydropower resources.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+        <div class="startup-card">
+          <div class="startup-logo">🧠</div>
+          <span class="tag">AI / Deep Tech</span>
+          <h4>Synapse Nordic</h4>
+          <span class="sector">Industrial AI · Trondheim</span>
+          <p>Applying machine learning to predictive maintenance in the offshore energy sector.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+        <div class="startup-card">
+          <div class="startup-logo">🌱</div>
+          <span class="tag">AgriTech</span>
+          <h4>Fjord Farms</h4>
+          <span class="sector">Vertical Farming · Bergen</span>
+          <p>Reinventing Nordic food production with data-driven indoor farming at scale.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+        <div class="startup-card">
+          <div class="startup-logo">🏗️</div>
+          <span class="tag">PropTech</span>
+          <h4>BuildSense</h4>
+          <span class="sector">Construction AI · Oslo</span>
+          <p>AI-powered platform cutting construction project overruns by 40% for Nordic developers.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+        <div class="startup-card">
+          <div class="startup-logo">🛡️</div>
+          <span class="tag">CyberSecurity</span>
+          <h4>Nordguard</h4>
+          <span class="sector">Security SaaS · Oslo</span>
+          <p>Enterprise-grade cybersecurity built for the unique needs of Nordic critical infrastructure.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+        <div class="startup-card">
+          <div class="startup-logo">🚢</div>
+          <span class="tag">Logistics</span>
+          <h4>WaveFreight</h4>
+          <span class="sector">Maritime Tech · Stavanger</span>
+          <p>Digital freight platform connecting Nordic shippers with global carriers in real time.</p>
+          <a href="blog.html" class="startup-link">Read more →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== INNOVATION HUBS ========== -->
+  <section class="section hubs-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="label">The ecosystem</span>
+        <h2>Norway's innovation hubs</h2>
+        <p class="lead" style="margin: 0 auto;">
+          From Oslo to Tromsø, these are the spaces and communities where tomorrow's Norwegian companies are taking shape.
+        </p>
+      </div>
+      <div class="grid-3" style="margin-top: var(--gap-md);">
+        <div class="hub-card">
+          <div class="hub-icon">🏙️</div>
+          <h4>StartupLab Oslo</h4>
+          <p>Norway's premier deep tech accelerator, home to serial entrepreneurs and breakthrough science.</p>
+          <span class="tag">Oslo · Tech</span>
+        </div>
+        <div class="hub-card">
+          <div class="hub-icon">🌍</div>
+          <h4>Katapult</h4>
+          <p>Impact-first accelerator and investor network amplifying startups solving global challenges.</p>
+          <span class="tag">Oslo · Impact</span>
+        </div>
+        <div class="hub-card">
+          <div class="hub-icon">🤝</div>
+          <h4>Mesh Oslo</h4>
+          <p>Vibrant co-working community connecting founders, freelancers, and creators across industries.</p>
+          <span class="tag">Oslo · Community</span>
+        </div>
+        <div class="hub-card">
+          <div class="hub-icon">🎓</div>
+          <h4>NTNU TTO</h4>
+          <p>Trondheim's research-to-market engine, spinning out deep tech companies from world-class academia.</p>
+          <span class="tag">Trondheim · Research</span>
+        </div>
+        <div class="hub-card">
+          <div class="hub-icon">⚡</div>
+          <h4>Founders</h4>
+          <p>A tight-knit founder-first community offering mentorship, funding, and radical transparency.</p>
+          <span class="tag">Oslo · VC</span>
+        </div>
+        <div class="hub-card">
+          <div class="hub-icon">🌊</div>
+          <h4>Bergen Tech Hub</h4>
+          <p>Western Norway's growing tech hub with a strong focus on maritime and clean energy ventures.</p>
+          <span class="tag">Bergen · Maritime</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT TEASER ========== -->
+  <section class="section">
+    <div class="container">
+      <div class="about-teaser">
+        <div class="about-teaser-img">
+          <div class="portrait-placeholder"></div>
+          <div class="name-badge">
+            <strong>Bess Andersen</strong>
+            <span>Startup Scout · Oslo, Norway</span>
+          </div>
+        </div>
+        <div>
+          <span class="label">About me</span>
+          <h2>A scout who lives<br>in the ecosystem</h2>
+          <div class="divider"></div>
+          <p class="lead">
+            I've spent the last 8 years embedded in the Norwegian startup world — attending every pitch night, every demo day, reading every funding announcement — so you don't have to.
+          </p>
+          <p style="margin-top: 12px;">
+            My job is to find the signal in the noise: the founders with genuine traction, the ideas with real defensibility, and the teams that won't quit when it gets hard.
+          </p>
+          <div class="about-values">
+            <div class="value-item">
+              <div class="value-icon">🏔️</div>
+              <div>
+                <h5>Nordic at heart</h5>
+                <p>Deep roots in the Scandinavian business culture</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">🤝</div>
+              <div>
+                <h5>Relationship first</h5>
+                <p>Every deal starts with a genuine connection</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">🔍</div>
+              <div>
+                <h5>Rigorous research</h5>
+                <p>Data-backed opinions, not hype-driven takes</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">🌱</div>
+              <div>
+                <h5>Long-term impact</h5>
+                <p>Building an ecosystem that lasts generations</p>
+              </div>
+            </div>
+          </div>
+          <a href="about.html" class="btn btn-primary mt-md">More About Me →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BLOG PREVIEW ========== -->
+  <section class="section" style="background: var(--white);">
+    <div class="container">
+      <div class="section-header-row">
+        <div>
+          <span class="label">Fresh insights</span>
+          <h2>From the field</h2>
+        </div>
+        <a href="blog.html" class="btn btn-outline">All Posts →</a>
+      </div>
+
+      <a href="blog.html" class="blog-card-featured">
+        <div class="blog-featured-img">🇳🇴</div>
+        <div class="blog-featured-body">
+          <span class="tag">Ecosystem</span>
+          <h3>Norway's Startup Scene in 2026: What Investors Need to Know Right Now</h3>
+          <p>A comprehensive look at the forces reshaping Norwegian venture capital — from green energy shifts to the rise of deep tech in Trondheim.</p>
+          <div class="blog-meta">
+            <span>March 8, 2026</span>
+            <div class="blog-meta-dot"></div>
+            <span>7 min read</span>
+          </div>
+        </div>
+      </a>
+
+      <div class="grid-3">
+        <a href="blog.html" class="blog-card-sm">
+          <div class="blog-card-sm-img" style="background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));">🌿</div>
+          <div class="blog-card-sm-body">
+            <span class="tag">CleanTech</span>
+            <h4>The Green Wave: Norway's CleanTech Startups Redefining Energy</h4>
+            <p>Why Scandinavia is becoming the global laboratory for sustainable energy innovation.</p>
+            <div class="blog-meta" style="margin-top: 12px;">
+              <span>Feb 24, 2026</span>
+              <div class="blog-meta-dot"></div>
+              <span>5 min read</span>
+            </div>
+          </div>
+        </a>
+        <a href="blog.html" class="blog-card-sm">
+          <div class="blog-card-sm-img" style="background: linear-gradient(135deg, var(--warm-light), #F5D5C5);">🏆</div>
+          <div class="blog-card-sm-body">
+            <span class="tag">Awards</span>
+            <h4>Nordic Startup Awards 2025: The Winners and What They Tell Us</h4>
+            <p>Breaking down the standout companies and the trends they represent.</p>
+            <div class="blog-meta" style="margin-top: 12px;">
+              <span>Jan 15, 2026</span>
+              <div class="blog-meta-dot"></div>
+              <span>4 min read</span>
+            </div>
+          </div>
+        </a>
+        <a href="blog.html" class="blog-card-sm">
+          <div class="blog-card-sm-img" style="background: linear-gradient(135deg, var(--surface), var(--surface-2));">💡</div>
+          <div class="blog-card-sm-body">
+            <span class="tag">Culture</span>
+            <h4>Why Nordic Founders Build Differently — and Why It Works</h4>
+            <p>The cultural DNA that makes Norwegian startups resilient and globally minded.</p>
+            <div class="blog-meta" style="margin-top: 12px;">
+              <span>Dec 10, 2025</span>
+              <div class="blog-meta-dot"></div>
+              <span>6 min read</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <div class="container">
+    <div class="cta-section">
+      <span class="label" style="color: var(--teal);">Let's work together</span>
+      <h2>Ready to explore what<br>Norway has to offer?</h2>
+      <p>Whether you're a founder looking for the right investor, or an investor seeking Norway's next breakout company — I'm here to bridge that gap.</p>
+      <div class="flex gap-sm">
+        <a href="contact.html" class="btn btn-teal">Get in Touch</a>
+        <a href="services.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.85);">See Services</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Bess<span>.</span></div>
+          <p>Connecting Norway's best founders with the world's best investors, one introduction at a time.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="blog.html">Insights</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Ecosystem</h5>
+          <ul>
+            <li><a href="#">StartupLab</a></li>
+            <li><a href="#">Katapult</a></li>
+            <li><a href="#">Mesh Oslo</a></li>
+            <li><a href="#">Innovation Norway</a></li>
+            <li><a href="#">Nordic Startup Awards</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:hello@bess.no">hello@bess.no</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">Oslo, Norway</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Bess Andersen. Built with curiosity about Norwegian innovation.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-link" aria-label="Email">✉</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky nav shadow
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Mobile menu toggle
+    const toggle = document.getElementById('navToggle');
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
