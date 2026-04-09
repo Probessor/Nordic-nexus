@@ -2,37 +2,47 @@
 """
 Podcast Workflow — Nordisk Nexus
 ---------------------------------
-Records one video file (DJI camera app), transcribes it in Norwegian
-using OpenAI Whisper, and publishes a new episode to podcast.html.
+Records one video file (DJI camera app), uploads it to YouTube,
+transcribes it in Norwegian using OpenAI Whisper, and publishes a
+new episode card to podcast.html — fully automated.
 
 Usage
 -----
   python podcast_workflow.py \\
     --video  path/to/episode.mp4 \\
-    --title  "Episode 3: Ola Nordmann om grønn tech" \\
+    --title  "Episode 1: Ola Nordmann om grønn tech" \\
     --guest  "Ola Nordmann" \\
     --role   "Grûnder, TechNord AS" \\
-    --desc   "Vi snakker om hva som trengs for å lykkes med grønn teknologi i Norge." \\
-    --topic  "CleanTech" \\
-    --youtube "https://youtu.be/XXXXXXXXXX"
+    --desc   "Vi snakker om hva som trengs for å lykkes i Norge." \\
+    --topic  "CleanTech"
 
-Required
---------
-  OPENAI_API_KEY  environment variable (or pass --api-key)
+First-time YouTube setup (one-off, ~5 min)
+------------------------------------------
+  1. Go to https://console.cloud.google.com and create a project
+  2. Enable "YouTube Data API v3"
+  3. Create OAuth credentials → Desktop app → download JSON
+  4. Save the file as  scripts/client_secrets.json
+  On first run the script opens a browser for Google sign-in and saves
+  a token so you never need to log in again.
 
-What it does
-------------
-  1. Extracts audio from the video with ffmpeg (for Whisper)
-  2. Transcribes the audio in Norwegian using OpenAI Whisper
-  3. Generates a timestamped transcript
-  4. Builds a new episode card (HTML) and prepends it to podcast.html
-  5. Saves the transcript as a plain .txt file in output/
+Required env vars
+-----------------
+  OPENAI_API_KEY   — OpenAI key for Whisper transcription
+
+What it does (in order)
+------------------------
+  1. Uploads the video to YouTube (Unlisted by default)
+  2. Extracts audio with ffmpeg and transcribes in Norwegian via Whisper
+  3. Builds a timestamped episode card and injects it into podcast.html
+  4. Saves the full transcript to output/episode_NNN_transcript.txt
+  5. Commits podcast.html and pushes to git automatically
 """
 
 import argparse
 import json
 import math
 import os
+import pickle
 import re
 import shutil
 import subprocess
@@ -41,83 +51,164 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCRIPTS_DIR = Path(__file__).parent
+TOKEN_PATH = SCRIPTS_DIR / ".youtube_token.pkl"
+SECRETS_PATH = SCRIPTS_DIR / "client_secrets.json"
+
 # ---------------------------------------------------------------------------
-# Helpers
+# ffmpeg helpers
 # ---------------------------------------------------------------------------
 
 def check_ffmpeg():
     if not shutil.which("ffmpeg"):
-        sys.exit("Error: ffmpeg is not installed. Install it from https://ffmpeg.org/download.html")
+        sys.exit(
+            "Error: ffmpeg is not installed.\n"
+            "  Mac:    brew install ffmpeg\n"
+            "  Linux:  sudo apt install ffmpeg"
+        )
 
 
 def extract_audio(video_path: Path, out_dir: Path) -> Path:
-    """Extract audio track from the video as a 16-kHz mono WAV for Whisper."""
+    """Extract audio as 16-kHz mono WAV (Whisper requirement)."""
     audio_path = out_dir / "audio_for_whisper.wav"
     cmd = [
         "ffmpeg", "-y",
         "-i", str(video_path),
-        "-vn",                # no video
-        "-ar", "16000",       # 16 kHz (Whisper requirement)
-        "-ac", "1",           # mono
-        "-c:a", "pcm_s16le",  # uncompressed WAV
+        "-vn", "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le",
         str(audio_path),
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
-        print("ffmpeg error:\n", result.stderr)
-        sys.exit("Failed to extract audio from video.")
+        sys.exit(f"ffmpeg failed:\n{result.stderr}")
     return audio_path
 
 
-def format_timestamp(seconds: float) -> str:
-    """Convert seconds to MM:SS string."""
-    m = int(seconds // 60)
-    s = int(seconds % 60)
-    return f"{m:02d}:{s:02d}"
-
-
 def get_video_duration(video_path: Path) -> float:
-    """Return duration in seconds using ffprobe."""
     cmd = [
-        "ffprobe", "-v", "quiet",
-        "-print_format", "json",
-        "-show_format",
-        str(video_path),
+        "ffprobe", "-v", "quiet", "-print_format", "json",
+        "-show_format", str(video_path),
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         return 0.0
-    data = json.loads(result.stdout)
-    return float(data.get("format", {}).get("duration", 0))
+    return float(json.loads(result.stdout).get("format", {}).get("duration", 0))
 
+
+# ---------------------------------------------------------------------------
+# YouTube upload
+# ---------------------------------------------------------------------------
+
+def get_youtube_client():
+    """Return an authenticated YouTube API client, opening a browser on first use."""
+    try:
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from google.auth.transport.requests import Request
+        from googleapiclient.discovery import build
+    except ImportError:
+        sys.exit(
+            "Error: Google API packages not installed.\n"
+            "  Run: pip install -r scripts/requirements.txt"
+        )
+
+    if not SECRETS_PATH.exists():
+        sys.exit(
+            f"Error: {SECRETS_PATH} not found.\n"
+            "  Download OAuth credentials from Google Cloud Console\n"
+            "  (APIs & Services → Credentials → Create → Desktop app)\n"
+            "  and save as scripts/client_secrets.json"
+        )
+
+    creds = None
+    if TOKEN_PATH.exists():
+        creds = pickle.loads(TOKEN_PATH.read_bytes())
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                str(SECRETS_PATH), YOUTUBE_SCOPES
+            )
+            print("Opening browser for YouTube authorization (one-time only)...")
+            creds = flow.run_local_server(port=0)
+        TOKEN_PATH.write_bytes(pickle.dumps(creds))
+
+    return build("youtube", "v3", credentials=creds)
+
+
+def upload_to_youtube(video_path: Path, title: str, description: str, privacy: str) -> str:
+    """Upload video and return its YouTube URL."""
+    try:
+        from googleapiclient.http import MediaFileUpload
+    except ImportError:
+        sys.exit("Error: google-api-python-client not installed.")
+
+    youtube = get_youtube_client()
+
+    body = {
+        "snippet": {
+            "title": title,
+            "description": description,
+            "categoryId": "22",  # People & Blogs
+        },
+        "status": {"privacyStatus": privacy},
+    }
+
+    media = MediaFileUpload(str(video_path), chunksize=10 * 1024 * 1024, resumable=True)
+    request = youtube.videos().insert(
+        part=",".join(body.keys()), body=body, media_body=media
+    )
+
+    print(f"Uploading to YouTube ({video_path.stat().st_size // (1024*1024)} MB)...")
+    response = None
+    while response is None:
+        status, response = request.next_chunk()
+        if status:
+            pct = int(status.progress() * 100)
+            print(f"  {pct}%", end="\r", flush=True)
+
+    video_id = response["id"]
+    url = f"https://youtu.be/{video_id}"
+    print(f"  Uploaded: {url}          ")
+    return url
+
+
+# ---------------------------------------------------------------------------
+# Transcription
+# ---------------------------------------------------------------------------
 
 def transcribe(audio_path: Path, api_key: str) -> dict:
-    """Transcribe audio in Norwegian using OpenAI Whisper. Returns the verbose JSON response."""
+    """Transcribe audio in Norwegian with OpenAI Whisper."""
     try:
         from openai import OpenAI
     except ImportError:
-        sys.exit("Error: openai package not installed. Run: pip install openai")
+        sys.exit("Error: openai not installed. Run: pip install openai")
 
     client = OpenAI(api_key=api_key)
-    print("Transcribing audio in Norwegian with Whisper... (this may take a minute)")
+    print("Transcribing in Norwegian with Whisper...")
 
     with open(audio_path, "rb") as f:
         response = client.audio.transcriptions.create(
             model="whisper-1",
             file=f,
-            language="no",          # Norwegian
+            language="no",
             response_format="verbose_json",
             timestamp_granularities=["segment"],
         )
 
-    # openai SDK returns a Transcription object; convert to dict
     if hasattr(response, "model_dump"):
         return response.model_dump()
     return dict(response)
 
 
+def format_timestamp(seconds: float) -> str:
+    m = int(seconds // 60)
+    s = int(seconds % 60)
+    return f"{m:02d}:{s:02d}"
+
+
 def build_transcript_segments_html(segments: list) -> str:
-    """Build the <div class="transcript-segment"> blocks from Whisper segments."""
     lines = []
     for seg in segments:
         start = format_timestamp(seg.get("start", 0))
@@ -133,6 +224,10 @@ def build_transcript_segments_html(segments: list) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------------------
+# HTML generation
+# ---------------------------------------------------------------------------
+
 def build_episode_card(
     episode_num: int,
     title: str,
@@ -144,26 +239,19 @@ def build_episode_card(
     duration_str: str,
     date_str: str,
     transcript_segments_html: str,
-    full_transcript: str,
 ) -> str:
-    """Return the full HTML block for one episode card."""
-
-    # Derive YouTube embed URL from watch URL
+    # YouTube embed URL
     embed_url = ""
     if youtube_url:
-        # Handle youtu.be/ID and youtube.com/watch?v=ID
         yt_match = re.search(r"(?:youtu\.be/|v=)([\w-]+)", youtube_url)
         if yt_match:
-            vid_id = yt_match.group(1)
-            embed_url = f"https://www.youtube.com/embed/{vid_id}"
+            embed_url = f"https://www.youtube.com/embed/{yt_match.group(1)}"
 
-    # Topic tag style
+    # Tag style
     tag_class = "tag"
-    warm_topics = {"Finansiering", "Funding", "Events", "Arrangementer"}
-    surface_topics = {"Kultur", "Culture", "Strategi", "Opinion"}
-    if topic in warm_topics:
+    if topic in {"Finansiering", "Funding", "Events", "Arrangementer"}:
         tag_class = "tag tag-warm"
-    elif topic in surface_topics:
+    elif topic in {"Kultur", "Culture", "Strategi", "Opinion"}:
         tag_class = "tag tag-surface"
 
     # Video block
@@ -173,14 +261,13 @@ def build_episode_card(
         video_inner = (
             '<div class="episode-video-placeholder">'
             '<span class="placeholder-icon">▶️</span>'
-            '<span>Last opp videoen til YouTube og kjør skriptet på nytt med --youtube URL</span>'
+            '<span>Video ikke tilgjengelig ennå</span>'
             '</div>'
         )
 
-    # Guest initials for avatar
     initials = "".join(w[0].upper() for w in guest.split()[:2]) if guest else "G"
 
-    card = f"""
+    return f"""
             <!-- Episode {episode_num}: {title} — added {date_str} -->
             <div class="episode-card" data-episode="{episode_num}">
               <div class="episode-header">
@@ -238,46 +325,67 @@ def build_episode_card(
               </div>
             </div>"""
 
-    return card
 
-
-def inject_episode(podcast_html_path: Path, card_html: str, guest: str, role: str, episode_num: int):
-    """Prepend the episode card inside #episodeList and update the guest widget."""
+def inject_episode(podcast_html_path: Path, card_html: str, guest: str, role: str):
     html = podcast_html_path.read_text(encoding="utf-8")
 
-    # --- Insert episode card at the TOP of #episodeList ---
     marker = '<!-- EPISODES ARE INJECTED HERE BY podcast_workflow.py -->'
     if marker not in html:
-        sys.exit(f"Injection marker not found in {podcast_html_path}. Has the file been modified?")
+        sys.exit(f"Injection marker not found in {podcast_html_path}.")
 
-    # Remove the placeholder "no episodes yet" card if it's still there
-    placeholder_pattern = re.compile(
+    # Remove placeholder card
+    html = re.sub(
         r'\s*<!-- Example episode card \(remove when real episodes are added\) -->.*?</div>\s*',
-        re.DOTALL,
+        "\n\n            ",
+        html,
+        flags=re.DOTALL,
     )
-    html = placeholder_pattern.sub("\n\n            ", html)
 
     html = html.replace(marker, marker + "\n" + card_html, 1)
 
-    # --- Update guest widget ---
-    guest_placeholder = '<p style="font-size: 0.84rem; color: var(--text-muted);">Gjester vises her etter første episode.</p>'
+    # Update guest widget
     initials = "".join(w[0].upper() for w in guest.split()[:2]) if guest else "G"
-    new_guest_item = (
+    new_guest = (
         f'<div class="guest-list-item">'
         f'<div class="guest-list-avatar">{initials}</div>'
         f'<div class="guest-list-info"><strong>{guest}</strong><span>{role}</span></div>'
         f'</div>'
     )
-    if guest_placeholder in html:
-        html = html.replace(guest_placeholder, new_guest_item)
+    placeholder = '<p style="font-size: 0.84rem; color: var(--text-muted);">Gjester vises her etter første episode.</p>'
+    if placeholder in html:
+        html = html.replace(placeholder, new_guest)
     else:
-        # Append to existing guest list
         html = html.replace(
             '</div>\n          </div>\n\n          <!-- Topics widget -->',
-            f'\n              {new_guest_item}\n            </div>\n          </div>\n\n          <!-- Topics widget -->',
+            f'\n              {new_guest}\n            </div>\n          </div>\n\n          <!-- Topics widget -->',
         )
 
     podcast_html_path.write_text(html, encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Git helpers
+# ---------------------------------------------------------------------------
+
+def git_commit_and_push(podcast_html_path: Path, episode_num: int):
+    repo_root = podcast_html_path.parent.parent
+    rel_path = podcast_html_path.relative_to(repo_root)
+
+    subprocess.run(["git", "add", str(rel_path)], cwd=repo_root, check=True)
+
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"], cwd=repo_root
+    )
+    if result.returncode == 0:
+        print("No changes to commit (episode may already be published).")
+        return
+
+    subprocess.run(
+        ["git", "commit", "-m", f"Add podcast episode {episode_num}"],
+        cwd=repo_root, check=True,
+    )
+    subprocess.run(["git", "push"], cwd=repo_root, check=True)
+    print("Pushed to git.")
 
 
 # ---------------------------------------------------------------------------
@@ -286,31 +394,35 @@ def inject_episode(podcast_html_path: Path, card_html: str, guest: str, role: st
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Publish a podcast episode: transcribe with Whisper and inject into podcast.html"
+        description="Upload DJI video to YouTube, transcribe in Norwegian, publish to podcast.html"
     )
-    parser.add_argument("--video",   required=True, help="Path to DJI video file (.mp4 / .mov)")
-    parser.add_argument("--title",   required=True, help="Episode title")
-    parser.add_argument("--guest",   required=True, help="Guest full name")
-    parser.add_argument("--role",    default="Gjest",  help="Guest role / company")
-    parser.add_argument("--desc",    default="",   help="Short episode description (1-2 sentences)")
-    parser.add_argument("--topic",   default="Gründere", help="Topic tag (e.g. CleanTech, AI, Finansiering)")
-    parser.add_argument("--youtube", default="",   help="YouTube URL after you upload the video")
-    parser.add_argument("--episode", type=int, default=None, help="Episode number (auto-detected if omitted)")
-    parser.add_argument("--api-key", default=os.environ.get("OPENAI_API_KEY"), help="OpenAI API key")
+    parser.add_argument("--video",    required=True, help="Path to video file (.mp4 / .mov)")
+    parser.add_argument("--title",    required=True, help="Episode title")
+    parser.add_argument("--guest",    required=True, help="Guest full name")
+    parser.add_argument("--role",     default="Gjest", help="Guest role / company")
+    parser.add_argument("--desc",     default="",   help="Short episode description")
+    parser.add_argument("--topic",    default="Gründere", help="Topic tag")
+    parser.add_argument("--privacy",  default="unlisted",
+                        choices=["public", "unlisted", "private"],
+                        help="YouTube privacy (default: unlisted)")
+    parser.add_argument("--episode",  type=int, default=None, help="Episode number (auto-detected)")
+    parser.add_argument("--no-upload", action="store_true",
+                        help="Skip YouTube upload (useful for testing)")
+    parser.add_argument("--no-push",   action="store_true",
+                        help="Skip git commit and push")
+    parser.add_argument("--api-key",  default=os.environ.get("OPENAI_API_KEY"))
     parser.add_argument(
         "--podcast-html",
-        default=str(Path(__file__).parent.parent / "olluri" / "podcast.html"),
-        help="Path to podcast.html (default: ../olluri/podcast.html)",
+        default=str(SCRIPTS_DIR.parent / "olluri" / "podcast.html"),
     )
     args = parser.parse_args()
 
-    # Validate
     if not args.api_key:
-        sys.exit("Error: OpenAI API key required. Set OPENAI_API_KEY or pass --api-key.")
+        sys.exit("Error: Set OPENAI_API_KEY or pass --api-key.")
 
     video_path = Path(args.video).resolve()
     if not video_path.exists():
-        sys.exit(f"Error: Video file not found: {video_path}")
+        sys.exit(f"Error: File not found: {video_path}")
 
     podcast_html = Path(args.podcast_html).resolve()
     if not podcast_html.exists():
@@ -323,42 +435,45 @@ def main():
         existing = re.findall(r'data-episode="(\d+)"', podcast_html.read_text(encoding="utf-8"))
         args.episode = max((int(n) for n in existing), default=0) + 1
 
-    print(f"Publishing episode {args.episode}: {args.title}")
+    print(f"\n--- Episode {args.episode}: {args.title} ---\n")
 
-    # Output directory
-    out_dir = Path(__file__).parent.parent / "output"
+    # 1. YouTube upload
+    youtube_url = ""
+    if not args.no_upload:
+        yt_description = (
+            f"{args.desc}\n\n"
+            f"Gjest: {args.guest} — {args.role}\n\n"
+            f"Nordisk Nexus Podkasten"
+        )
+        youtube_url = upload_to_youtube(video_path, args.title, yt_description, args.privacy)
+    else:
+        print("Skipping YouTube upload (--no-upload).")
+
+    # 2. Transcribe
+    out_dir = SCRIPTS_DIR.parent / "output"
     out_dir.mkdir(exist_ok=True)
 
-    # 1. Extract audio
-    print("Extracting audio from video...")
+    print("Extracting audio...")
     with tempfile.TemporaryDirectory() as tmp:
         audio_path = extract_audio(video_path, Path(tmp))
-
-        # 2. Transcribe
         result = transcribe(audio_path, args.api_key)
 
-    segments = result.get("segments", [])
-    full_text = result.get("text", "").strip()
+    segments   = result.get("segments", [])
+    full_text  = result.get("text", "").strip()
 
-    # 3. Save transcript
     ep_slug = f"episode_{args.episode:03d}"
     transcript_path = out_dir / f"{ep_slug}_transcript.txt"
     transcript_path.write_text(full_text, encoding="utf-8")
-    print(f"Transcript saved to: {transcript_path}")
+    print(f"Transcript saved → {transcript_path.name}")
 
-    # 4. Build duration string
-    duration_secs = get_video_duration(video_path)
-    if duration_secs > 0:
-        mins = math.floor(duration_secs / 60)
-        duration_str = f"{mins} min"
-    else:
-        duration_str = "–"
+    # 3. Duration
+    secs = get_video_duration(video_path)
+    duration_str = f"{math.floor(secs / 60)} min" if secs > 0 else "–"
 
-    date_str = datetime.today().strftime("%-d. %B %Y").lower()
-    # Capitalise month
-    date_str = date_str[0].upper() + date_str[1:]
+    # Norwegian date, e.g. "9. april 2026"
+    date_str = datetime.today().strftime("%-d. %B %Y")
 
-    # 5. Build HTML
+    # 4. Build and inject HTML
     segments_html = build_transcript_segments_html(segments)
     card_html = build_episode_card(
         episode_num=args.episode,
@@ -367,24 +482,21 @@ def main():
         role=args.role,
         desc=args.desc,
         topic=args.topic,
-        youtube_url=args.youtube,
+        youtube_url=youtube_url,
         duration_str=duration_str,
         date_str=date_str,
         transcript_segments_html=segments_html,
-        full_transcript=full_text,
     )
+    inject_episode(podcast_html, card_html, args.guest, args.role)
+    print(f"Episode {args.episode} injected into podcast.html")
 
-    # 6. Inject into podcast.html
-    inject_episode(podcast_html, card_html, args.guest, args.role, args.episode)
-    print(f"Episode {args.episode} injected into {podcast_html}")
+    # 5. Git push
+    if not args.no_push:
+        git_commit_and_push(podcast_html, args.episode)
 
-    # Done
-    print()
-    print("Done! Next steps:")
-    print(f"  1. Upload {video_path.name} to YouTube (if you haven't yet)")
-    if not args.youtube:
-        print(f"  2. Re-run with --youtube <URL> to embed the video player")
-    print(f"  3. git add olluri/podcast.html && git commit -m 'Add episode {args.episode}' && git push")
+    print(f"\nDone! Episode {args.episode} is live.")
+    if youtube_url:
+        print(f"YouTube: {youtube_url}")
 
 
 if __name__ == "__main__":
